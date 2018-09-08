@@ -75,4 +75,41 @@ describe('Use Cases', () => {
       message: 'Please add $1.50',
     });
   });
+
+  it('Use Case 4', () => {
+    // A generous User deposits $5 in quarters and walks away.
+    user.deposit(new Coins({
+      quarters: 20,
+    }));
+
+    //2. A different (and lucky, and savvy) User
+    const user2 = new User(vendingMachine);
+
+    //checks the price of a Twix,
+    expect(user2.checkPrice(0)).toEqual(0.75);
+    // of a Sour Patch Kids,
+    expect(user2.checkPrice(1)).toEqual(2.00);
+    // and of an Atomic Warhead.
+    expect(user2.checkPrice(2)).toEqual(0.50);
+
+    // The second User buys an Atomic Warhead,
+    let { change } = user2.buy(2);
+    expect(change).toEqual({
+      quarters: 18,
+      dimes: 0,
+      nickles: 0,
+      pennies: 0,
+    });
+
+    // and, using the change she received, buys a Twix.
+    user2.deposit(new Coins(change));
+    change = user2.buy(0).change;
+    expect(change).toEqual({
+      quarters: 15,
+      dimes: 0,
+      nickles: 0,
+      pennies: 0,
+    });
+  });
+
 });

@@ -107,6 +107,8 @@ module.exports = class VendingMachine {
       };
     }
 
+    this.balance = 0;
+
     return result;
   }
 };

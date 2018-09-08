@@ -207,5 +207,17 @@ describe('VendingMachine', () => {
         },
       });
     });
+
+    it('sets the balance to 0', () => {
+      vendingMachine.load(0, 'foo', 1);
+      vendingMachine.setPrice(0, 1.25);
+      vendingMachine.deposit(new Coins({
+        quarters: 8,
+      }));
+
+      vendingMachine.buy(0);
+
+      expect(vendingMachine.balance).toBe(0);
+    });
   });
 });
