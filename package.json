@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "npm run lint && jasmine"
+    "test": "istanbul cover jasmine"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,8 @@
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jasmine": "^2.10.1",
+    "istanbul": "^0.4.5",
     "jasmine": "^3.2.0"
-  }
+  },
+  "dependencies": {}
 }
