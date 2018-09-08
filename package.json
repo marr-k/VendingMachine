@@ -1,0 +1,27 @@
+{
+  "name": "vendingmachine",
+  "version": "1.0.0",
+  "description": "kata",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "npm run lint && jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marr-k/VendingMachine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marr-k/VendingMachine/issues"
+  },
+  "homepage": "https://github.com/marr-k/VendingMachine#readme",
+  "devDependencies": {
+    "eslint": "^5.5.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jasmine": "^2.10.1",
+    "jasmine": "^3.2.0"
+  }
+}
