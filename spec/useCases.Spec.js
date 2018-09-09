@@ -94,7 +94,7 @@ describe('Use Cases', () => {
       quarters: 2,
       dimes: 0,
       nickles: 0,
-      pennies: 0
+      pennies: 0,
     });
   });
 
