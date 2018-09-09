@@ -121,8 +121,14 @@ module.exports = class VendingMachine {
       result = {
         message: `Please add ${VendingMachine.toCurrency(delta * -1)}`,
       };
+    } else if (compartment.quantity < quantity) {
+      result = {
+        message: 'Please make another selection.',
+      };
     } else {
       this.totalBought = compartment.price * quantity;
+      compartment.quantity -= quantity;
+      this.initCoinsTotal();
 
       if (delta === 0) {
         result = {
@@ -139,8 +145,6 @@ module.exports = class VendingMachine {
         };
       }
     }
-
-    this.initCoinsTotal();
 
     return result;
   }

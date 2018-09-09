@@ -261,5 +261,17 @@ describe('VendingMachine', () => {
         },
       });
     });
+
+    it('you can\'t buy more items than are in stock', () => {
+      vendingMachine.load(0, 'foo', 2);
+      vendingMachine.setPrice(0, 0.25);
+      vendingMachine.deposit(new Coins({
+        quarters: 3,
+      }));
+
+      expect(vendingMachine.buy(0, 3)).toEqual({
+        message: 'Please make another selection.',
+      });
+    });
   });
 });

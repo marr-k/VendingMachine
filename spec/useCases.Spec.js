@@ -135,7 +135,7 @@ describe('Use Cases', () => {
     // 4. A different User , who has only quarters,
     const user2 = new User(vendingMachine);
     // checks the price on a Twix,
-    expect(user2.checkPrice(0), 0.85);
+    expect(user2.checkPrice(0)).toBe(0.85);
 
     // deposits enough money to buy 3, and does so.
     user2.deposit(new Coins({
@@ -165,10 +165,55 @@ describe('Use Cases', () => {
   });
 
   it('Use Case 6', () => {
-    /*
-      1. A User deposits enough money (in any denomination) to buy 2 Twixes and does so.
-      2. A different User deposits enough money to buy a Twix a tries to do so.
-      3. The second User realizes her error, checks the price of a Sour Patch Kids,
-         addsenough money (in any denomination) to buy one, and does so. */
+    // override beforeEach
+    vendingMachine = new VendingMachine();
+
+    admin = new Admin(vendingMachine);
+    user = new User(vendingMachine);
+
+    admin.loadProduct(0, 'Twix', 2);
+    admin.setPrice(0, 0.75);
+
+    admin.loadProduct(1, 'Sour Patch Kids', 10);
+    admin.setPrice(1, 2);
+
+    admin.loadProduct(2, 'Atomic Warheads', 3);
+    admin.setPrice(2, 0.5);
+
+    // 1. A User deposits enough money (in any denomination) to buy 2 Twixes and does so.
+    user.deposit(new Coins({
+      quarters: 4,
+      dimes: 5,
+    }));
+    user.buy(0, 2);
+
+    // 2. A different User deposits enough money to buy a Twix a tries to do so.
+    const user2 = new User(vendingMachine);
+    user2.deposit(new Coins({
+      dimes: 7,
+      pennies: 5,
+    }));
+
+    expect(user2.buy(0)).toEqual({
+      message: 'Please make another selection.',
+    });
+
+    // 3. The second User realizes her error, checks the price of a Sour Patch Kids,
+    expect(user2.checkPrice(1)).toBe(2);
+
+    // adds enough money (in any denomination) to buy one,
+    user2.deposit(new Coins({
+      pennies: 125,
+    }));
+
+    // and does so.
+    expect(user2.buy(1)).toEqual({
+      change: {
+        quarters: 0,
+        dimes: 0,
+        nickles: 0,
+        pennies: 0,
+      },
+    });
   });
 });
