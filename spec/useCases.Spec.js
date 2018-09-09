@@ -4,6 +4,13 @@ const User = require('../src/User.js');
 const Coins = require('../src/Coins.js');
 
 describe('Use Cases', () => {
+  const EMPTY_COINS = {
+    quarters: 0,
+    dimes: 0,
+    nickles: 0,
+    pennies: 0,
+  };
+
   let vendingMachine;
   let admin;
   let user;
@@ -38,13 +45,13 @@ describe('Use Cases', () => {
 
     // and buys a Twix.
     expect(user.buy(0)).toEqual({
-      change: {
-        quarters: 0,
-        dimes: 0,
-        nickles: 0,
-        pennies: 0,
-      },
+      change: EMPTY_COINS,
     });
+
+    // check the vending machine state
+    expect(vendingMachine.totalBought).toBe(0.75);
+    expect(vendingMachine.compartments[0].quantity).toBe(4);
+    expect(vendingMachine.coinsTotal).toEqual(EMPTY_COINS);
   });
 
   it('Use Case 2', () => {
@@ -62,6 +69,11 @@ describe('Use Cases', () => {
         pennies: 0,
       },
     });
+
+    // check the vending machine state
+    expect(vendingMachine.totalBought).toBe(0.75);
+    expect(vendingMachine.compartments[0].quantity).toBe(4);
+    expect(vendingMachine.coinsTotal).toEqual(EMPTY_COINS);
   });
 
   it('Use Case 3', () => {
@@ -73,6 +85,16 @@ describe('Use Cases', () => {
     // and tries to buy a Sour Patch Kids.
     expect(user.buy(1)).toEqual({
       message: 'Please add $1.50',
+    });
+
+    // check the vending machine state
+    expect(vendingMachine.totalBought).toBe(0);
+    expect(vendingMachine.compartments[1].quantity).toBe(10);
+    expect(vendingMachine.coinsTotal).toEqual({
+      quarters: 2,
+      dimes: 0,
+      nickles: 0,
+      pennies: 0
     });
   });
 
@@ -109,6 +131,13 @@ describe('Use Cases', () => {
       nickles: 0,
       pennies: 0,
     });
+
+    // check the vending machine state
+    expect(vendingMachine.totalBought).toBe(1.25);
+    expect(vendingMachine.compartments[0].quantity).toBe(4);
+    expect(vendingMachine.compartments[1].quantity).toBe(10);
+    expect(vendingMachine.compartments[2].quantity).toBe(2);
+    expect(vendingMachine.coinsTotal).toEqual(EMPTY_COINS);
   });
 
   it('Use Case 5', () => {
@@ -162,6 +191,13 @@ describe('Use Cases', () => {
 
     // and counts it.
     expect(VendingMachine.countCoins(retrievedCoins)).toBe(2.55);
+
+    // check the vending machine state
+    expect(vendingMachine.totalBought).toBe(0);
+    expect(vendingMachine.compartments[0].quantity).toBe(2);
+    expect(vendingMachine.compartments[1].quantity).toBe(10);
+    expect(vendingMachine.compartments[2].quantity).toBe(3);
+    expect(vendingMachine.coinsTotal).toEqual(EMPTY_COINS);
   });
 
   it('Use Case 6', () => {
@@ -215,5 +251,12 @@ describe('Use Cases', () => {
         pennies: 0,
       },
     });
+
+    // check the vending machine state
+    expect(vendingMachine.totalBought).toBe(3.5);
+    expect(vendingMachine.compartments[0].quantity).toBe(0);
+    expect(vendingMachine.compartments[1].quantity).toBe(9);
+    expect(vendingMachine.compartments[2].quantity).toBe(3);
+    expect(vendingMachine.coinsTotal).toEqual(EMPTY_COINS);
   });
 });

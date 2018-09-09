@@ -126,7 +126,7 @@ module.exports = class VendingMachine {
         message: 'Please make another selection.',
       };
     } else {
-      this.totalBought = compartment.price * quantity;
+      this.totalBought += compartment.price * quantity;
       compartment.quantity -= quantity;
       this.initCoinsTotal();
 

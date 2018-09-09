@@ -273,5 +273,27 @@ describe('VendingMachine', () => {
         message: 'Please make another selection.',
       });
     });
+
+    it('you can buy many times', () => {
+      vendingMachine.load(0, 'foo', 3);
+      vendingMachine.setPrice(0, 0.25);
+
+      vendingMachine.deposit(new Coins({
+        quarters: 1,
+      }));
+      vendingMachine.buy(0, 1);
+
+      vendingMachine.deposit(new Coins({
+        quarters: 1,
+      }));
+      vendingMachine.buy(0, 1);
+
+      vendingMachine.deposit(new Coins({
+        quarters: 1,
+      }));
+      vendingMachine.buy(0, 1);
+
+      expect(vendingMachine.totalBought).toBe(0.75);
+    });
   });
 });
