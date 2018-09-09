@@ -48,11 +48,11 @@ describe('VendingMachine', () => {
       });
     });
 
-    it('calculates the correct change for 41 cents', () => {
-      expect(VendingMachine.getChange(1)).toEqual({
-        quarters: 4,
+    it('calculates the correct change for 255 cents', () => {
+      expect(VendingMachine.getChange(2.55)).toEqual({
+        quarters: 10,
         dimes: 0,
-        nickles: 0,
+        nickles: 1,
         pennies: 0,
       });
     });
@@ -161,6 +161,31 @@ describe('VendingMachine', () => {
     });
   });
 
+  describe('retrieve', () => {
+    it('should add all sales + all pending change', () => {
+      vendingMachine.load(0, 'foo', 1);
+      vendingMachine.setPrice(0, 0.25);
+      vendingMachine.deposit(new Coins({
+        quarters: 1,
+      }));
+      vendingMachine.buy(0, 1);
+
+      vendingMachine.deposit(new Coins({
+        quarters: 1,
+        dimes: 1,
+        nickles: 1,
+        pennies: 1,
+      }));
+
+      expect(vendingMachine.retrieve()).toEqual({
+        quarters: 2,
+        dimes: 1,
+        nickles: 1,
+        pennies: 1,
+      });
+    });
+  });
+
   describe('buy', () => {
     it('returns no change when the exact amount is deposited', () => {
       vendingMachine.load(0, 'foo', 1);
@@ -169,7 +194,7 @@ describe('VendingMachine', () => {
         quarters: 1,
       }));
 
-      expect(vendingMachine.buy(0)).toEqual({
+      expect(vendingMachine.buy(0, 1)).toEqual({
         change: {
           quarters: 0,
           dimes: 0,
@@ -186,7 +211,7 @@ describe('VendingMachine', () => {
         pennies: 2,
       }));
 
-      expect(vendingMachine.buy(0)).toEqual({
+      expect(vendingMachine.buy(0, 1)).toEqual({
         message: 'Please add $1.23',
       });
     });
@@ -198,7 +223,7 @@ describe('VendingMachine', () => {
         quarters: 8,
       }));
 
-      expect(vendingMachine.buy(0)).toEqual({
+      expect(vendingMachine.buy(0, 1)).toEqual({
         change: {
           quarters: 3,
           dimes: 0,
@@ -215,9 +240,26 @@ describe('VendingMachine', () => {
         quarters: 8,
       }));
 
-      vendingMachine.buy(0);
+      vendingMachine.buy(0, 1);
 
       expect(vendingMachine.balance).toBe(0);
+    });
+
+    it('you can buy many items', () => {
+      vendingMachine.load(0, 'foo', 2);
+      vendingMachine.setPrice(0, 0.25);
+      vendingMachine.deposit(new Coins({
+        quarters: 2,
+      }));
+
+      expect(vendingMachine.buy(0, 2)).toEqual({
+        change: {
+          quarters: 0,
+          dimes: 0,
+          nickles: 0,
+          pennies: 0,
+        },
+      });
     });
   });
 });

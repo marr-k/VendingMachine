@@ -11,7 +11,7 @@ module.exports = class Admin {
     this.vendingMachine.deposit(coins);
   }
 
-  buy(compartmentIndex) {
-    return this.vendingMachine.buy(compartmentIndex);
+  buy(compartmentIndex, quantity = 1) {
+    return this.vendingMachine.buy(compartmentIndex, quantity);
   }
 };

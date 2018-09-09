@@ -10,4 +10,8 @@ module.exports = class Admin {
   setPrice(compartment, price) {
     this.vendingMachine.setPrice(compartment, price);
   }
+
+  retrieve() {
+    return this.vendingMachine.retrieve();
+  }
 };

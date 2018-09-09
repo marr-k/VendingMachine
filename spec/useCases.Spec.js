@@ -82,10 +82,10 @@ describe('Use Cases', () => {
       quarters: 20,
     }));
 
-    //2. A different (and lucky, and savvy) User
+    // 2. A different (and lucky, and savvy) User
     const user2 = new User(vendingMachine);
 
-    //checks the price of a Twix,
+    // checks the price of a Twix,
     expect(user2.checkPrice(0)).toEqual(0.75);
     // of a Sour Patch Kids,
     expect(user2.checkPrice(1)).toEqual(2.00);
@@ -93,7 +93,7 @@ describe('Use Cases', () => {
     expect(user2.checkPrice(2)).toEqual(0.50);
 
     // The second User buys an Atomic Warhead,
-    let { change } = user2.buy(2);
+    const { change } = user2.buy(2);
     expect(change).toEqual({
       quarters: 18,
       dimes: 0,
@@ -103,8 +103,7 @@ describe('Use Cases', () => {
 
     // and, using the change she received, buys a Twix.
     user2.deposit(new Coins(change));
-    change = user2.buy(0).change;
-    expect(change).toEqual({
+    expect(user2.buy(0).change).toEqual({
       quarters: 15,
       dimes: 0,
       nickles: 0,
@@ -112,4 +111,64 @@ describe('Use Cases', () => {
     });
   });
 
+  it('Use Case 5', () => {
+    // 1. A generous User deposits $5 in quarters and walks away.
+    user.deposit(new Coins({
+      quarters: 20,
+    }));
+
+    /* 2. An Admin , having spied on the User ,
+      retrieves all the deposited money from the VendingMachine . */
+    expect(admin.retrieve()).toEqual({
+      quarters: 20,
+      dimes: 0,
+      nickles: 0,
+      pennies: 0,
+    });
+
+    /* 3. That Admin , sensing that he's surrounded by high rollers,
+      raises the prices on all items by $.10. */
+    admin.setPrice(0, 0.85);
+    admin.setPrice(1, 2.10);
+    admin.setPrice(2, 0.60);
+
+    // 4. A different User , who has only quarters,
+    const user2 = new User(vendingMachine);
+    // checks the price on a Twix,
+    expect(user2.checkPrice(0), 0.85);
+
+    // deposits enough money to buy 3, and does so.
+    user2.deposit(new Coins({
+      quarters: 11,
+    }));
+
+    expect(user2.buy(0, 3)).toEqual({
+      change: {
+        quarters: 0,
+        dimes: 2,
+        nickles: 0,
+        pennies: 0,
+      },
+    });
+
+    // 5. That Admin retrieves all the deposited money from the VendingMachine
+    const retrievedCoins = admin.retrieve();
+    expect(retrievedCoins).toEqual({
+      quarters: 10,
+      dimes: 0,
+      nickles: 1,
+      pennies: 0,
+    });
+
+    // and counts it.
+    expect(VendingMachine.countCoins(retrievedCoins)).toBe(2.55);
+  });
+
+  it('Use Case 6', () => {
+    /*
+      1. A User deposits enough money (in any denomination) to buy 2 Twixes and does so.
+      2. A different User deposits enough money to buy a Twix a tries to do so.
+      3. The second User realizes her error, checks the price of a Sour Patch Kids,
+         addsenough money (in any denomination) to buy one, and does so. */
+  });
 });

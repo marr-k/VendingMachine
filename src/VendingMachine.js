@@ -1,7 +1,8 @@
 module.exports = class VendingMachine {
   constructor() {
     this.compartments = new Array(10);
-    this.balance = 0;
+    this.initCoinsTotal();
+    this.totalBought = 0;
 
     for (let i = 0; i < 10; i += 1) {
       this.compartments[i] = {
@@ -24,7 +25,7 @@ module.exports = class VendingMachine {
       pennies: 0,
     };
 
-    let runningTotal = totalChange * 100;
+    let runningTotal = +(totalChange * 100).toFixed(2);
     change.quarters = Math.floor(runningTotal / 25);
     runningTotal %= 25;
     change.dimes = Math.floor(runningTotal / 10);
@@ -33,6 +34,22 @@ module.exports = class VendingMachine {
     change.pennies = runningTotal % 5;
 
     return change;
+  }
+
+  static countCoins(coins) {
+    return +(coins.quarters * 0.25
+      + coins.dimes * 0.10
+      + coins.nickles * 0.05
+      + coins.pennies * 0.01).toFixed(2);
+  }
+
+  initCoinsTotal() {
+    this.coinsTotal = {
+      quarters: 0,
+      dimes: 0,
+      nickles: 0,
+      pennies: 0,
+    };
   }
 
   getCompartment(compartmentIndex) {
@@ -73,41 +90,57 @@ module.exports = class VendingMachine {
     return compartment.price;
   }
 
-  deposit(coins) {
-    this.balance = +(this.balance
-      + coins.quarters * 0.25
-      + coins.dimes * 0.10
-      + coins.nickles * 0.05
-      + coins.pennies * 0.01).toFixed(2);
+  get balance() {
+    return VendingMachine.countCoins(this.coinsTotal);
   }
 
-  buy(compartmentIndex) {
+  deposit(coins) {
+    this.coinsTotal.quarters += coins.quarters;
+    this.coinsTotal.dimes += coins.dimes;
+    this.coinsTotal.nickles += coins.nickles;
+    this.coinsTotal.pennies += coins.pennies;
+  }
+
+  retrieve() {
+    const result = +(this.totalBought + this.balance).toFixed(2);
+
+    this.totalBought = 0;
+    this.initCoinsTotal();
+
+    return VendingMachine.getChange(result);
+  }
+
+  buy(compartmentIndex, quantity) {
     const compartment = this.getCompartment(compartmentIndex);
 
-    const delta = this.balance - compartment.price;
+    const delta = +(this.balance - compartment.price * quantity).toFixed(2);
 
     let result;
 
-    if (delta === 0) {
-      result = {
-        change: {
-          quarters: 0,
-          dimes: 0,
-          nickles: 0,
-          pennies: 0,
-        },
-      };
-    } else if (delta < 0) {
+    if (delta < 0) {
       result = {
         message: `Please add ${VendingMachine.toCurrency(delta * -1)}`,
       };
     } else {
-      result = {
-        change: VendingMachine.getChange(delta),
-      };
+      this.totalBought = compartment.price * quantity;
+
+      if (delta === 0) {
+        result = {
+          change: {
+            quarters: 0,
+            dimes: 0,
+            nickles: 0,
+            pennies: 0,
+          },
+        };
+      } else {
+        result = {
+          change: VendingMachine.getChange(delta),
+        };
+      }
     }
 
-    this.balance = 0;
+    this.initCoinsTotal();
 
     return result;
   }
